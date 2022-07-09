@@ -1,5 +1,5 @@
 ### Intro
-Photo Library is an free stock images app.
+Photo Library is a free stock image app.
 
 ### Usage
 ```
