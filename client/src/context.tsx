@@ -63,6 +63,7 @@ const AppProvider:FC<Props> = ({ children }) => {
 
     useEffect(() => {
         fetchRequest(searchTerm,page);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page,searchTerm])
 
     return (
