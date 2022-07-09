@@ -10,7 +10,7 @@ npm start
 ```
 
 ### Live Preview
-[Visit Photo Library](https://photo-library.netlify.app)
+[Visit Photo Library](https://empash-photo-library.netlify.app)
 
 ### Tech Used
 **FrontEnd**: React, Tailwindcss, Typescript, Unsplash API,
