@@ -1,8 +1,12 @@
 const mysql = require('mysql');
-const connection = require('../model/db');
+const connection = require('../db');
 const generateAccessToken = require('../utils/generateAccessToken');
 
 const signInUser = (req,res) => {
+    connection.query(`select * from users`, (err, result) => {
+        if(err) console.log("Error: "+err);
+        console.log(result);
+    })
     res.json({
         message:"login"
     })
@@ -25,7 +29,7 @@ const registerUser = (req, res) => {
     // execute query
     connection.query(sql, (err,result) => {
         if(err) {
-            res.status(500).json({
+            res.status(400).json({
                 success:false,
                 message:err,
                 body: null
@@ -33,14 +37,39 @@ const registerUser = (req, res) => {
             return;
         }
         if(result.length == 0) {
-            // token creation
-            let token = generateAccessToken({username,email});
-            token = "Bearer "+token;
-            res.setHeader('Authorization',token);
-            res.status(201).json({
-                success:true,
-                message:"successfully registered",
-                body: token
+            let uid = 123;
+            let hashed_pass = 'sakdksdkkaskdf';
+            sql = 'insert into users (id,firstname,lastname,username,email,password) values (?,?,?,?,?,?)';
+            inserts = [uid,connection.escape(firstname),connection.escape(lastname),connection.escape(username),connection.escape(email),hashed_pass];
+            sql = mysql.format(sql,inserts);
+            console.log(sql);
+            connection.query(sql, (err, results) => {
+                if(err) {
+                    res.status(400).json({
+                    success:false,
+                    message:err,
+                    body: null
+                })
+                return;
+                }
+                if(results.length === 0) {
+                    res.status(400).json({
+                        success:false,
+                        message:err,
+                        body: null
+                    })
+                    return;
+                } else {
+                    // token creation
+                    let token = generateAccessToken({username,email});
+                    token = "Bearer "+token;
+                    res.setHeader('Authorization',token);
+                    res.status(201).json({
+                        success:true,
+                        message:"successfully registered",
+                        body: null
+                    })
+                }
             })
         } else {
             res.status(403).json({
