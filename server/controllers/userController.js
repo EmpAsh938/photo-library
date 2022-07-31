@@ -1,8 +1,8 @@
-const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const connection = require('../db');
-const generateAccessToken = require('../utils/generateAccessToken');
+const UserModel = require('../model/userModel');
 const generateRandomId = require('../utils/generateRandomId');
+const generateAccessToken = require('../utils/generateAccessToken');
 
 const signInUser = (req,res) => {
     const { email, password } = req.body;
@@ -14,11 +14,9 @@ const signInUser = (req,res) => {
         })
         return;
     }
-    // prepare sql query
-    let sql = 'select username,password from users where email=?';
-    let inserts = [connection.escape(email)];
-    sql = mysql.format(sql,inserts);
-    connection.query(sql, async (err, result) => {
+    let mail = connection.escape(email).toLowerCase();
+    let values = {email:mail};
+    new UserModel().select('users',values,async (err, result) => {
         if(err) {
             res.status(400).json({
                 success: false,
@@ -70,12 +68,16 @@ const registerUser = (req, res) => {
         })
         return;
     }
-    // prepare sql query
-    let sql = `select id from users where email=? or username=?`;
-    let inserts = [connection.escape(email),connection.escape(username)];
-    sql = mysql.format(sql, inserts);
+    // escape from sqli
+    let fname = connection.escape(firstname).toLowerCase();
+    let lname = connection.escape(lastname).toLowerCase();
+    let uname = connection.escape(username).toLowerCase();
+    let mail = connection.escape(email).toLowerCase();
     // execute query
-    connection.query(sql, async (err,result) => {
+    let emailField = {email:mail};
+    let usernameField = {username:uname};
+    let fields = `${emailField} or ${usernameField}`
+    new UserModel().select('users',fields, async (err,result) => {
         if(err) {
             res.status(400).json({
                 success:false,
@@ -85,12 +87,11 @@ const registerUser = (req, res) => {
             return;
         }
         if(result.length == 0) {
-            let uid = generateRandomId(20);
+            let uid = generateRandomId(20).toString();
             let hashed_pass = await bcrypt.hash(password,10);
-            sql = 'insert into users (id,firstname,lastname,username,email,password) values (?,?,?,?,?,?)';
-            inserts = [uid,connection.escape(firstname),connection.escape(lastname),connection.escape(username),connection.escape(email),hashed_pass];
-            sql = mysql.format(sql,inserts);
-            connection.query(sql, (err, results) => {
+            hashed_pass = hashed_pass.toString();
+            let values = {id:uid,firstname:fname,lastname:lname,username:uname,email:mail,password:hashed_pass};
+            new UserModel().insert('users',values,(err, results) => {
                 if(err) {
                     res.status(400).json({
                     success:false,

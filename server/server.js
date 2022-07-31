@@ -4,6 +4,7 @@ const morgan = require('morgan');
 
 // imports
 const user = require('./routes/userRoutes');
+const fileUpload = require('./routes/fileUploadRoutes');
 const pageNotFound = require('./routes/pageNotFound');
 
 // initializer
@@ -25,5 +26,6 @@ app.listen(port, () => {
 
 // routes
 app.use('/auth',user);
+app.use('/images',fileUpload);
 app.all('*',pageNotFound);
 
