@@ -1,15 +1,20 @@
-import React, { FC } from 'react';
-import { Navbar, Hero, Search } from './components';
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from 'react-router-dom';
+import { Home, Login, Signup, Error} from './pages';
 
-const App:FC = () => {
+const App = () => {
   return (
-    <>
-      <Navbar />
-      <main>
-        <Search />
-        <Hero />
-      </main>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/Signup' element={<Signup />} />
+        <Route path='*' element={<Error />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
