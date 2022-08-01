@@ -1,7 +1,9 @@
 import { Navbar, Hero, Search } from '../components';
 import Upload from '../components/Upload';
+import { useGlobalContext } from '../context';
 
 const Home = () => {
+  const { activeUploadModal } = useGlobalContext();
   return (
     <>
       <Navbar />
@@ -9,7 +11,7 @@ const Home = () => {
         <Search />
         <Hero />
       </main>
-      <Upload />
+      {activeUploadModal && <Upload />}
     </>
   );
 }

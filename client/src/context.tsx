@@ -16,10 +16,15 @@ type PhotosObj = {
 
 export type AppContextValue = {
     page: number;
+    isLoggedIn: boolean;
+    isFailed: boolean;
     searchTerm: string;
     photos: PhotosObj[];
+    activeUploadModal: boolean;
+    handleLogOut: () => void;
     handleSearchTerm: (val:string) => void;
     handleLoadMore: () => void;
+    handleActiveUploadModal: (param:boolean) => void;
 }
 
 
@@ -35,7 +40,9 @@ const AppProvider:FC<Props> = ({ children }) => {
     const [page, setPage] = useState<number>(1);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [photos, setPhotos] = useState<PhotosObj[]>([]);
-
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [isFailed, setIsFailed] = useState<boolean>(false);
+    const [activeUploadModal, setActiveModal] = useState<boolean>(false);
 
     const fetchRequest = async (term:string,pageno:number) => {
         let url = '';
@@ -48,8 +55,19 @@ const AppProvider:FC<Props> = ({ children }) => {
             if(Array.isArray(res)) setPhotos([...photos, ...res]);
             else setPhotos([...res.results]);
         } catch (error) {
+            setIsFailed(true);
             console.log(error);
         }
+    }
+
+
+    const handleActiveUploadModal = (param:boolean) => {
+        if(param) setActiveModal(true);
+        else setActiveModal(false);
+    }
+
+    const handleLogOut = () => {
+        setIsLoggedIn(false);
     }
 
     const handleSearchTerm = (input:string) => {
@@ -70,9 +88,14 @@ const AppProvider:FC<Props> = ({ children }) => {
         <AppContext.Provider value={{
             page,
             photos,
+            isFailed,
+            isLoggedIn,
             searchTerm,
+            activeUploadModal,
+            handleLogOut,
             handleLoadMore,
-            handleSearchTerm
+            handleSearchTerm,
+            handleActiveUploadModal
         }}>
             {children}
         </AppContext.Provider>
