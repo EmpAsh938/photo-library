@@ -18,12 +18,16 @@ export type AppContextValue = {
     page: number;
     isLoggedIn: boolean;
     isFailed: boolean;
+    isLoading: boolean;
     searchTerm: string;
     photos: PhotosObj[];
+    userUploadPhotos: File[];
     activeUploadModal: boolean;
     handleLogOut: () => void;
     handleSearchTerm: (val:string) => void;
     handleLoadMore: () => void;
+    handleRemoveUserPhoto: (id:number) => void;
+    handleUploadPhotos: (item: File[]) => void;
     handleActiveUploadModal: (param:boolean) => void;
 }
 
@@ -40,11 +44,14 @@ const AppProvider:FC<Props> = ({ children }) => {
     const [page, setPage] = useState<number>(1);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [photos, setPhotos] = useState<PhotosObj[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [userUploadPhotos, setUserUploadPhotos] = useState<File[]>([]);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFailed, setIsFailed] = useState<boolean>(false);
     const [activeUploadModal, setActiveModal] = useState<boolean>(false);
 
     const fetchRequest = async (term:string,pageno:number) => {
+        setIsLoading(true);
         let url = '';
         if(term){
             url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.searchPhoto}/?client_id=${process.env.REACT_APP_ACCESS_KEY}&query=${term}&page=${pageno}&per_page=30`
@@ -58,8 +65,19 @@ const AppProvider:FC<Props> = ({ children }) => {
             setIsFailed(true);
             console.log(error);
         }
+        setIsLoading(false);
     }
 
+
+    const handleUploadPhotos = (files:File[]) => {
+        setUserUploadPhotos([...files]);
+    }
+
+    const handleRemoveUserPhoto = (id:number) => {
+        setUserUploadPhotos(prev => {
+            return prev.filter(item => item.lastModified !== id);
+        })
+    }
 
     const handleActiveUploadModal = (param:boolean) => {
         if(param) setActiveModal(true);
@@ -89,12 +107,16 @@ const AppProvider:FC<Props> = ({ children }) => {
             page,
             photos,
             isFailed,
+            isLoading,
             isLoggedIn,
             searchTerm,
+            userUploadPhotos,
             activeUploadModal,
             handleLogOut,
             handleLoadMore,
             handleSearchTerm,
+            handleUploadPhotos,
+            handleRemoveUserPhoto,
             handleActiveUploadModal
         }}>
             {children}

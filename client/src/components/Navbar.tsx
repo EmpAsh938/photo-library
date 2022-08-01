@@ -1,13 +1,14 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useGlobalContext } from '../context';
 
 const Navbar = () => {
     const { isLoggedIn, activeUploadModal, handleActiveUploadModal } = useGlobalContext();
 
+    const navigate = useNavigate();
+
     const handleUploadButton = () => {
-        if(!isLoggedIn) handleActiveUploadModal(false);
-        else if (!activeUploadModal) handleActiveUploadModal(true);
-        else handleActiveUploadModal(false); 
+        if(isLoggedIn && !activeUploadModal) handleActiveUploadModal(true);
+        else  navigate('/login',{replace:true});
     }
     return (
         <header className='border-b-2 border-solid border-gray-200'>

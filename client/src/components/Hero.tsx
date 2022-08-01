@@ -2,7 +2,16 @@ import  { FC } from 'react';
 import { useGlobalContext } from '../context';
 
 const Hero:FC = () => {
-    const { photos, isFailed, handleLoadMore } = useGlobalContext();
+    const { photos, isLoading, isFailed, handleLoadMore } = useGlobalContext();
+
+    if (isLoading) {
+        return (
+            <section className='h-[800px]'>
+                <h3 className='text-center text-blue-900 text-5xl font-bold py-10'>Loading...</h3>
+            </section>
+        )
+    }
+
 
     if (isFailed) {
         return (
@@ -15,7 +24,7 @@ const Hero:FC = () => {
     if (photos.length === 0) {
         return (
             <section className='h-[800px]'>
-                <h3 className='text-center text-blue-900 text-5xl font-bold py-10'>Loading...</h3>
+                <h3 className='text-center text-blue-900 text-5xl font-bold py-10'>No items to fetch</h3>
             </section>
         )
     }
