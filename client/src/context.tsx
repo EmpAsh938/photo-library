@@ -26,7 +26,6 @@ export type AppContextValue = {
     handleLogOut: () => void;
     handleSearchTerm: (val:string) => void;
     handleLoadMore: () => void;
-    handleRemoveUserPhoto: (id:number) => void;
     handleUploadPhotos: (item: File[]) => void;
     handleActiveUploadModal: (param:boolean) => void;
 }
@@ -68,31 +67,41 @@ const AppProvider:FC<Props> = ({ children }) => {
         setIsLoading(false);
     }
 
+    const uploadFile = async () => {
+        let uploadUrl = '';
+        try {
+            const req = await fetch(uploadUrl);
+            // const res = await
+        } catch (error) {
+            
+        }
+    }
 
+    // storing upload files ready to be uploaded
     const handleUploadPhotos = (files:File[]) => {
         setUserUploadPhotos([...files]);
     }
 
-    const handleRemoveUserPhoto = (id:number) => {
-        setUserUploadPhotos(prev => {
-            return prev.filter(item => item.lastModified !== id);
-        })
-    }
 
+    // toggle upload modal
     const handleActiveUploadModal = (param:boolean) => {
         if(param) setActiveModal(true);
         else setActiveModal(false);
     }
 
+    // logout
     const handleLogOut = () => {
         setIsLoggedIn(false);
     }
 
+    // search photos
     const handleSearchTerm = (input:string) => {
         setSearchTerm(input);
         setPage(1);
     }
 
+
+    // load more photos
     const handleLoadMore = () => {
         setPage(oldPage => oldPage + 1);
     }
@@ -116,7 +125,6 @@ const AppProvider:FC<Props> = ({ children }) => {
             handleLoadMore,
             handleSearchTerm,
             handleUploadPhotos,
-            handleRemoveUserPhoto,
             handleActiveUploadModal
         }}>
             {children}
