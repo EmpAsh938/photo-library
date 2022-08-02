@@ -38,7 +38,7 @@ const Upload = () => {
     return (
         <section className="fixed w-full min-h-screen h-full top-0 left-0 bg-[rgba(0,0,0,0.9)] p-2 z-20 overflow-y-scroll overflow-x-hidden">
             <div className="absolute w-full h-full z-30" onClick={handleClick}></div>
-            <form
+            <div
             className="bg-white max-w-lg w-full mx-auto mt-4 p-4 rounded z-50 relative"
             >
                 <button className="text-3xl absolute right-4 top-2 text-red-500" onClick={handleClick}><MdClose /></button>
@@ -71,7 +71,7 @@ const Upload = () => {
                 <div className="my-5 grid place-items-center">
                     <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600">Upload</button>
                 </div>
-            </form>
+            </div>
         </section>
     )
 }

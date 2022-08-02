@@ -1,4 +1,5 @@
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 
 type Props = {
     children: ReactNode;
@@ -53,13 +54,13 @@ const AppProvider:FC<Props> = ({ children }) => {
         setIsLoading(true);
         let url = '';
         if(term){
-            url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.searchPhoto}/?client_id=${process.env.REACT_APP_ACCESS_KEY}&query=${term}&page=${pageno}&per_page=30`
-        } else url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.listPhoto}/?client_id=${process.env.REACT_APP_ACCESS_KEY}&page=${pageno}&per_page=30`
+            url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.searchPhoto}/?client_id=${process.env.REACT_APP_ACCESS_KEY}&query=${term}&page=${pageno}&per_page=30`;
+        } else url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.listPhoto}/?client_id=${process.env.REACT_APP_ACCESS_KEY}&page=${pageno}&per_page=30`;
         try {
-            const req = await fetch(url);
-            const res = await req.json();
-            if(Array.isArray(res)) setPhotos([...photos, ...res]);
-            else setPhotos([...res.results]);
+            const response = await axios.get(url);
+            const results = response.data;
+            if(Array.isArray(results)) setPhotos([...photos, ...results]);
+            else setPhotos([...results.results]);
         } catch (error) {
             setIsFailed(true);
             console.log(error);
@@ -67,14 +68,21 @@ const AppProvider:FC<Props> = ({ children }) => {
         setIsLoading(false);
     }
 
-    const uploadFile = async () => {
-        let uploadUrl = '';
-        try {
-            const req = await fetch(uploadUrl);
-            // const res = await
-        } catch (error) {
-            
-        }
+    const uploadFile = () => {
+        let uploadUrl = 'http://localhost:8000/images/upload';
+        const formData = new FormData();
+        userUploadPhotos.forEach(item => {
+            formData.append('photosArray',item);
+        })
+        axios.post(uploadUrl, formData, {
+            headers: {
+                'Content-Type':'multipart/form-data'
+            }
+        }).then((res) => {
+            console.log(res);
+        }).catch((err) => {
+            console.log(err);
+        })
     }
 
     // storing upload files ready to be uploaded
@@ -105,6 +113,11 @@ const AppProvider:FC<Props> = ({ children }) => {
     const handleLoadMore = () => {
         setPage(oldPage => oldPage + 1);
     }
+
+    useEffect(() => {
+        if(userUploadPhotos.length > 0) uploadFile();
+    // eslint-disable-next-line
+    }, [userUploadPhotos]);
 
     useEffect(() => {
         fetchRequest(searchTerm,page);
