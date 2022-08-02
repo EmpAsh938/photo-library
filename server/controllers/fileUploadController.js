@@ -1,3 +1,5 @@
+const FileModel = require('../model/fileModel');
+
 const getAllFile = (req, res) => {
     const { page } = req.query;
     if(!page || isNaN(page)) {
@@ -27,7 +29,32 @@ const uploadFile = (req, res) => {
             body: null
         })
     } else {
-        console.log('not null');
+        let id = Math.floor(Math.random() * 1E10);
+        let values = {pid:id,path:file.path,creator_name:'author',tags:'',title:'',creator_id:'authorid'};
+        new FileModel().save('photos',values,(err, results) => {
+            if(err || results.length === 0) {
+                return res.status(400).json({
+                    success:false,
+                    message: err,
+                    body: null
+                })
+            }
+            values = '';
+            new FileModel().select('photos',values,(err,results) => {
+                if(err || results.length === 0) {
+                    return res.status(400).json({
+                        success:false,
+                        message: err,
+                        body: null
+                    })
+                }
+                return res.status(201).json({
+                    success:true,
+                    message:"successfully uploaded",
+                    body: results
+                })
+            })
+        })
     }
 }
 

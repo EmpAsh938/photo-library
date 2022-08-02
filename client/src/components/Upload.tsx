@@ -30,7 +30,7 @@ const Upload = () => {
     }
     
     useEffect(() => {
-        // handleUploadPhotos(resultFile);
+        if(resultFile) uploadFile(resultFile);
     // eslint-disable-next-line
     }, [resultFile])
     return (

@@ -41,7 +41,7 @@ const signInUser = (req,res) => {
                 let token = generateAccessToken({username,email});
                 token = "Bearer "+token;
                 res.setHeader('Authorization',token);
-                res.status(201).json({
+                res.status(200).json({
                     success:true,
                     message:"successfully logged in",
                     body: null
@@ -91,33 +91,23 @@ const registerUser = (req, res) => {
             let hashed_pass = await bcrypt.hash(password,10);
             hashed_pass = hashed_pass.toString();
             let values = {id:uid,firstname:fname,lastname:lname,username:uname,email:mail,password:hashed_pass};
-            new UserModel().insert('users',values,(err, results) => {
-                if(err) {
-                    res.status(400).json({
+            new UserModel().save('users',values,(err, results) => {
+                if(err || results.length === 0) {
+                    return res.status(400).json({
                     success:false,
                     message:err,
                     body: null
                 })
-                return;
                 }
-                if(results.length === 0) {
-                    res.status(400).json({
-                        success:false,
-                        message:err,
-                        body: null
-                    })
-                    return;
-                } else {
-                    // token creation
-                    let token = generateAccessToken({username,email});
-                    token = "Bearer "+token;
-                    res.setHeader('Authorization',token);
-                    res.status(201).json({
-                        success:true,
-                        message:"successfully registered",
-                        body: null
-                    })
-                }
+                // token creation
+                let token = generateAccessToken({username,email});
+                token = "Bearer "+token;
+                res.setHeader('Authorization',token);
+                res.status(201).json({
+                    success:true,
+                    message:"successfully registered",
+                    body: null
+                })
             })
         } else {
             res.status(403).json({
