@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const cors = reqiure('cors');
 
 // imports
 const user = require('./routes/userRoutes');
@@ -11,11 +12,23 @@ const pageNotFound = require('./routes/pageNotFound');
 const app = express();
 dotenv.config();
 const port = process.env.PORT || 8100;
+const corsUrl = process.env.ALLOWED_URLS || '';
+const whitelist = corsUrl.split(',').map(item => item.trim())
+const corsOptions = {
+    origin: (origin, callback) => {
+        if(whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}
 
 
 // middleware
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cors(corsOptions));
 app.use(express.urlencoded({extended:true}))
 
 
