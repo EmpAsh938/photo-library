@@ -6,13 +6,23 @@ type Props = {
 }
 
 type urlType = {
-    regular: string
+    regular: string;
 }
 
 type PhotosObj = {
-    id: string
-    alt_description: string
-    urls: urlType
+    id: string;
+    alt_description: string;
+    urls: urlType;
+}
+
+type Photos = {
+    pid: string;
+    path: string;
+    creator_name: string;
+    uploaded_at: string;
+    title:string;
+    tags: string;
+    creator_id: string;
 }
 
 export type AppContextValue = {
@@ -22,12 +32,12 @@ export type AppContextValue = {
     isLoading: boolean;
     searchTerm: string;
     photos: PhotosObj[];
-    userUploadPhotos: File[];
+    userUploadPhotos: Photos[];
     activeUploadModal: boolean;
+    uploadFile: (item:File) => void;
     handleLogOut: () => void;
-    handleSearchTerm: (val:string) => void;
     handleLoadMore: () => void;
-    handleUploadPhotos: (item: File[]) => void;
+    handleSearchTerm: (val:string) => void;
     handleActiveUploadModal: (param:boolean) => void;
 }
 
@@ -44,7 +54,7 @@ const AppProvider:FC<Props> = ({ children }) => {
     const [page, setPage] = useState<number>(1);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [photos, setPhotos] = useState<PhotosObj[]>([]);
-    const [userUploadPhotos, setUserUploadPhotos] = useState<File[]>([]);
+    const [userUploadPhotos, setUserUploadPhotos] = useState<Photos[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFailed, setIsFailed] = useState<boolean>(false);
@@ -68,12 +78,10 @@ const AppProvider:FC<Props> = ({ children }) => {
         setIsLoading(false);
     }
 
-    const uploadFile = () => {
+    const uploadFile = (imageItem:File) => {
         let uploadUrl = 'http://localhost:8000/images/upload';
         const formData = new FormData();
-        userUploadPhotos.forEach(item => {
-            formData.append('photosArray',item);
-        })
+        formData.append('photosArray',imageItem);
         axios.post(uploadUrl, formData, {
             headers: {
                 'Content-Type':'multipart/form-data'
@@ -84,12 +92,6 @@ const AppProvider:FC<Props> = ({ children }) => {
             console.log(err);
         })
     }
-
-    // storing upload files ready to be uploaded
-    const handleUploadPhotos = (files:File[]) => {
-        setUserUploadPhotos([...files]);
-    }
-
 
     // toggle upload modal
     const handleActiveUploadModal = (param:boolean) => {
@@ -115,11 +117,6 @@ const AppProvider:FC<Props> = ({ children }) => {
     }
 
     useEffect(() => {
-        if(userUploadPhotos.length > 0) uploadFile();
-    // eslint-disable-next-line
-    }, [userUploadPhotos]);
-
-    useEffect(() => {
         fetchRequest(searchTerm,page);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page,searchTerm])
@@ -134,10 +131,10 @@ const AppProvider:FC<Props> = ({ children }) => {
             searchTerm,
             userUploadPhotos,
             activeUploadModal,
+            uploadFile,
             handleLogOut,
             handleLoadMore,
             handleSearchTerm,
-            handleUploadPhotos,
             handleActiveUploadModal
         }}>
             {children}

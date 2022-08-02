@@ -3,36 +3,34 @@ import { useGlobalContext } from "../context";
 import { MdClose } from 'react-icons/md';
 
 const Upload = () => {
-    const [resultFile, setResultFile] = useState<File[]>([]);
-    const { userUploadPhotos, handleActiveUploadModal, handleUploadPhotos } = useGlobalContext();
+    const [resultFile, setResultFile] = useState<File | null>(null);
+    const { userUploadPhotos, handleActiveUploadModal, uploadFile } = useGlobalContext();
     const inputRef = useRef({} as HTMLInputElement);
 
     const handleChange = () => {
         const files = inputRef.current.files;
         if(files) {
-            const length = files.length;
-            for(let i=0;i<length;i++) {
-                if(files[i].type.split('/')[0] === 'image') {
-                    setResultFile([...resultFile, files[i]]);
-                }
+
+            if(files[0].type.split('/')[0] === 'image') {
+                setResultFile(files[0]);
             }
         }
     }
 
     const handleClick = (event:MouseEvent) => {
         handleActiveUploadModal(false);
-        setResultFile([]);
+        setResultFile(null);
     }
 
     // remove upload photos to be uploaded
-    const handleRemoveClick = (id:number) => {
-        setResultFile(prev => {
-            return prev.filter(item => item.lastModified !== id);
-        })
+    const handleRemoveClick = (id:string) => {
+        // setResultFile(prev => {
+        //     return prev.filter(item => item.pid !== id);
+        // })
     }
     
     useEffect(() => {
-        handleUploadPhotos(resultFile);
+        // handleUploadPhotos(resultFile);
     // eslint-disable-next-line
     }, [resultFile])
     return (
@@ -52,9 +50,9 @@ const Upload = () => {
                     {userUploadPhotos.length > 0 && (
                         userUploadPhotos.map(item => {
                             return (
-                                <div key={item.lastModified} className="flex flex-col gap-2 border border-solid border-slate-400 p-2">
-                                    <button onClick={() => handleRemoveClick(item.lastModified)} className="w-fit text-red-700"><MdClose /></button>
-                                    <h3 className="text-center">{item.name}</h3>
+                                <div key={item.pid} className="flex flex-col gap-2 border border-solid border-slate-400 p-2">
+                                    <button onClick={() => handleRemoveClick(item.pid)} className="w-fit text-red-700"><MdClose /></button>
+                                    <h3 className="text-center">{item.title}</h3>
                                     <div className="flex flex-col gap-1">
                                         
                                         <input type="text" placeholder="Add Title" id="title" className="outline-none border border-slate-300 p-1 px-4"/>
@@ -69,7 +67,7 @@ const Upload = () => {
                     )}  
                 </div>
                 <div className="my-5 grid place-items-center">
-                    <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600">Upload</button>
+                    <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600">Publish</button>
                 </div>
             </div>
         </section>
