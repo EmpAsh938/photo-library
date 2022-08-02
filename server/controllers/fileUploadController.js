@@ -18,7 +18,17 @@ const getSingleFile = (req, res) => {
 }
 
 const uploadFile = (req, res) => {
-
+    const file = req.files;
+    if(file['photosArray']===undefined) {
+        console.log('null');
+        res.status(400).json({
+            success:false,
+            message:'Wrong extension/mime type or no valid file',
+            body: null
+        })
+    } else {
+        console.log('not null');
+    }
 }
 
 module.exports = {
