@@ -87,7 +87,7 @@ const AppProvider:FC<Props> = ({ children }) => {
                 'Content-Type':'multipart/form-data'
             }
         }).then((res) => {
-            console.log(res);
+            if(res.data.body) setUserUploadPhotos([...userUploadPhotos, res.data.body]);
         }).catch((err) => {
             console.log(err);
         })

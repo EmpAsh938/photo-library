@@ -1,0 +1,7 @@
+PORT = 8000
+ALLOWED_URLS = http://localhost,http://localhost:3000
+TOKEN_SECRET = apple12345
+DB_HOST = localhost
+DB_USER = pl-user
+DB_PASS = pl-user
+DB_NAME = photo_library

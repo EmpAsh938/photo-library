@@ -31,6 +31,7 @@ const Upload = () => {
     
     useEffect(() => {
         if(resultFile) uploadFile(resultFile);
+        setResultFile(null);
     // eslint-disable-next-line
     }, [resultFile])
     return (
@@ -50,17 +51,16 @@ const Upload = () => {
                     {userUploadPhotos.length > 0 && (
                         userUploadPhotos.map(item => {
                             return (
-                                <div key={item.pid} className="flex flex-col gap-2 border border-solid border-slate-400 p-2">
-                                    <button onClick={() => handleRemoveClick(item.pid)} className="w-fit text-red-700"><MdClose /></button>
-                                    <h3 className="text-center">{item.title}</h3>
+                                <div key={item.pid} className="relative flex gap-2 border border-solid border-slate-400 pt-4">
+                                    <button onClick={() => handleRemoveClick(item.pid)} className="absolute top-0 left-0 w-fit text-red-700"><MdClose /></button>
+                                    <div>
+                                        <img src={'http://localhost:8000/'+item.path} alt={item.title} />
+                                    </div>
                                     <div className="flex flex-col gap-1">
                                         
                                         <input type="text" placeholder="Add Title" id="title" className="outline-none border border-slate-300 p-1 px-4"/>
-                                    </div>
-                                <div className="flex flex-col gap-1">
-                                    
                                         <input type="text" placeholder="Add Tags" id="tags" className="outline-none border border-slate-300 p-1 px-4"/>
-                                </div>
+                                    </div>
                                 </div>
                             )
                         })
