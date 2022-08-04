@@ -169,24 +169,24 @@ const saveFile = (req, res) => {
                             body: null
                         })
                     }
-                    let field = {path:newPath.split('/server/')[1]};
-                    let condition = {path:oldPath.split('/server/')[1]};
-                    fileModel.update('photos',field,condition, (err, result) => {
-                        if(err) {
-                            return res.status(400).json({
-                                success: false,
-                                message: err,
-                                body: null
-                            })
-                        }
-                        if(!result) {
-                            return res.status(400).json({
-                                success: false,
-                                message: 'path update failed',
-                                body: null
-                            })
-                        }
-                    })
+                })
+                let field = {path:newPath.split('/server/')[1]};
+                let condition = {path:oldPath.split('/server/')[1]};
+                fileModel.update('photos',field,condition, (err, result) => {
+                    if(err) {
+                        return res.status(400).json({
+                            success: false,
+                            message: err,
+                            body: null
+                        })
+                    }
+                    if(!result) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'path update failed',
+                            body: null
+                        })
+                    }
                 })
             }
             return res.json({
@@ -198,9 +198,113 @@ const saveFile = (req, res) => {
     })
 }
 
+const removeOne = (req, res) => {
+    const { id } = req.params.id;
+    if(!id) {
+        return res.json(400).json({
+            success: false,
+            message: 'empty id',
+            body: null
+        })
+    }
+
+    let path = path.join(__dirname, '../uploads/tmp', id);
+    let fields = {pid:id};
+    fileModel.delete('photos',fields, (err, results) => {
+        if(err) {
+            return res.status(400).json({
+                success: false,
+                message: err,
+                body: null
+            })
+        }
+        if(!results) {
+            return res.status(400).json({
+                success: false,
+                message: 'deletion failed',
+                body: null
+            })
+        }
+    })
+    fs.rm(path, (err) => {
+        if(err) {
+            return res.status(400).json({
+                success: false,
+                message: err,
+                body: null
+            })
+        }
+    })
+    return res.status(200).json({
+        success: true,
+        message: 'deleted successfully',
+        body: []
+    })
+}
+
+const removeAll = (req, res) => {
+    const pathName = path.join(__dirname, '../uploads/tmp');
+    fs.readdir(pathName, (err, files) => {
+        if(err) {
+            return res.status(400).json({
+                success: false,
+                message: err,
+                body: null
+            })
+        }
+
+        if(files.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'no files to remove',
+                body: null
+            })
+        }
+
+        const length = files.length;
+        for(let i=0;i<length;i++){
+            let path = pathName.split('/server/')[1]+'/'+files[i];
+            fs.rm(path, (err) => {
+                if(err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: err,
+                        body: null
+                    })
+                }
+            })
+            let fields = {path:path};
+            fileModel.delete('photos',fields,(err, results) => {
+                if(err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: err,
+                        body: null
+                    })
+                }
+                if(!results) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'deletion failed',
+                        body: null
+                    })
+                }
+
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'succesfully removed',
+            body: []
+        })
+    })
+}
+
 module.exports = {
     saveFile,
-    uploadFile,
     getUpload,
+    removeOne,
+    removeAll,
+    uploadFile,
     saveFileDetails,
 }

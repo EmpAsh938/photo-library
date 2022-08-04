@@ -24,6 +24,12 @@ class Model {
     let sql = `UPDATE ${table} SET ? WHERE ?`;
     this.db.query(sql,[fields,condition],callback);
    }
+
+   // remove items
+   delete = (table, fields, callback) => {
+    let sql = `DELETE FROM ${table} WHERE ?`;
+    this.db.query(sql,fields,callback);
+   }
 }
 
 module.exports = Model;

@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { uploadFile, getUpload, saveFileDetails, saveFile } = require('../controllers/uploadController');
+const { uploadFile, getUpload, saveFileDetails, saveFile, removeAll, removeOne } = require('../controllers/uploadController');
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -29,5 +29,7 @@ router.post('/', cpUpload, uploadFile);
 router.post('/:id', saveFileDetails);
 router.get('/save', saveFile);
 router.get('/tmp/:id', getUpload);
+router.delete('/', removeAll);
+router.delete('/:id', removeOne);
 
 module.exports = router;

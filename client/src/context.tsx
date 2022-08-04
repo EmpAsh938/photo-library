@@ -39,6 +39,7 @@ export type AppContextValue = {
     handleLogOut: () => void;
     handleLoadMore: () => void;
     uploadFile: (item:File) => void;
+    removeUpload: (id?:string) => void;
     handleSearchTerm: (val:string) => void;
     handleResultFile: (val:File|null) => void;
     handleActiveUploadModal: (param:boolean) => void;
@@ -112,10 +113,23 @@ const AppProvider:FC<Props> = ({ children }) => {
         }).catch(err => console.log(err));
     }
 
+    const removeUpload = async (id?:string) => {
+        let uploadUrl = 'http://localhost:8000/uploads/';
+        let uploadUrlId = uploadUrl+id;
+        if(id) {
+            await axios.delete(uploadUrlId)
+            .then(res => console.log(res))
+            .catch(err => console.log(err))
+        } else {
+            await axios.delete(uploadUrl)
+            .then(res => console.log(res))
+            .catch(err => console.log(err))
+        }
+    }
+
     // toggle upload modal
     const handleActiveUploadModal = (param:boolean) => {
-        if(param) setActiveUploadModal(true);
-        else setActiveUploadModal(false);
+        setActiveUploadModal(param);
     }
 
     // logout
@@ -153,6 +167,7 @@ const AppProvider:FC<Props> = ({ children }) => {
             activeUploadModal,
             saveUpload,
             uploadFile,
+            removeUpload,
             handleLogOut,
             handleLoadMore,
             handleSearchTerm,

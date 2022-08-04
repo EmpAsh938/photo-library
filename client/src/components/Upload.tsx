@@ -3,7 +3,7 @@ import { useGlobalContext } from "../context";
 import { MdClose } from 'react-icons/md';
 
 const Upload = () => {
-    const { resultFile, userUploadPhotos, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useGlobalContext();
+    const { resultFile, userUploadPhotos, removeUpload, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useGlobalContext();
     const inputRef = useRef({} as HTMLInputElement);
 
     const handleChange = () => {
@@ -17,15 +17,10 @@ const Upload = () => {
     }
 
     const handleClick = (event:MouseEvent) => {
-        handleActiveUploadModal(false);
-        handleResultFile(null);
-    }
-
-    // remove upload photos to be uploaded
-    const handleRemoveClick = (id:string) => {
-        // setResultFile(prev => {
-        //     return prev.filter(item => item.pid !== id);
-        // })
+        if(userUploadPhotos.length === 0) {
+            handleActiveUploadModal(false);
+            handleResultFile(null);
+        }
     }
     
     useEffect(() => {
@@ -51,7 +46,7 @@ const Upload = () => {
                         userUploadPhotos.map(item => {
                             return (
                                 <div key={item.pid} className="relative flex gap-2 border border-solid border-slate-400 pt-4">
-                                    <button onClick={() => handleRemoveClick(item.pid)} className="absolute top-0 left-0 w-fit text-red-700"><MdClose /></button>
+                                    <button onClick={() => removeUpload(item.pid)} className="absolute top-0 left-0 w-fit text-red-700"><MdClose /></button>
                                     <div>
                                         <img src={'http://localhost:8000/'+item.path} alt={item.title} />
                                     </div>
@@ -65,7 +60,8 @@ const Upload = () => {
                         })
                     )}  
                 </div>
-                <div className="my-5 grid place-items-center">
+                <div className="my-5 flex justify-center gap-2">
+                    <button className="inline-block border-none bg-red-700 text-white px-4 py-1 rounded-sm hover:bg-red-600" onClick={() => removeUpload()}>Cancel</button>
                     <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600" onClick={saveUpload}>Publish</button>
                 </div>
             </div>
