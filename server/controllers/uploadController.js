@@ -14,8 +14,9 @@ const uploadFile = (req, res) => {
             body: null
         })
     } else {
+        let extension = file.photosArray[0].mimetype;
         let id = Math.floor(Math.random() * 1E10);
-        let values = {pid:id,path:file.photosArray[0].path,creator_name:'author',tags:'',description:'',creator_id:'344nrt3pg5s5yqqy8mrs'};
+        let values = {pid:id,path:file.photosArray[0].path,creator_name:'author',tags:'',description:'',file_ext:extension,creator_id:'344nrt3pg5s5yqqy8mrs'};
         fileModel.save('photos',values,(err, results) => {
             if(err || results.length === 0) {
                 return res.status(400).json({
@@ -43,22 +44,41 @@ const getUpload = (req, res) => {
             body: null
         })
     }
-    const options = {
-        root: path.join(__dirname, '../uploads/tmp'),
-        dotfiles: 'deny',
-        headers: {
-            'Content-Type':'image/png',
-            'x-timestamp': Date.now(),
-            'x-sent': true
-        }
-    }
-    res.sendFile(id, options, (err) => {
-        
+    
+    let fields = {pid:id};
+    fileModel.select('photos',fields,(err, results) => {
         if(err) {
-            console.log(err);
-        } else {
-            console.log('Sent: '+id);
+            return res.status(400).json({
+                success: false,
+                message: err,
+                body: null
+            })
         }
+        if(results.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'image not found',
+                body: null
+            })
+        }
+        const options = {
+            root: path.join(__dirname, '../uploads/tmp'),
+            dotfiles: 'deny',
+            headers: {
+                'Content-Type':results[0].extension,
+                'x-timestamp': Date.now(),
+                'x-sent': true
+            }
+        }
+        res.sendFile(id, options, (err) => {
+            
+            if(err) {
+                console.log(err);
+            } else {
+                console.log('Sent: '+id);
+            }
+            res.end();
+        })
     })
 }
 
@@ -86,7 +106,7 @@ const saveFileDetails = (req, res) => {
         }
 
         if(results.length === 0) {
-            return res.status(400).json({
+            return res.status(401).json({
                 success: false,
                 message: 'id does not match',
                 body: null
@@ -94,29 +114,29 @@ const saveFileDetails = (req, res) => {
         }
 
         fileModel.update('photos', fields, condition, (err, doc) => {
-            if(err) {
-                return res.status(400).json({
-                    success: false,
-                    message: err,
-                    body: null
-                })
-            }
-            if(!doc) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'update failed',
-                    body: null
-                })
-            } else {
+                if(err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: err,
+                        body: null
+                    })
+                }
+                if(!doc) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'update failed',
+                        body: null
+                    })
+                }
                 return res.status(200).json({
                     success: true,
                     message: 'succesfully updated',
                     body: results
                 })
-            }
-        })
+            })
     })
 }
+
 
 const saveFile = (req, res) => {
     const pathName = path.join(__dirname, '../uploads/tmp');
@@ -149,8 +169,8 @@ const saveFile = (req, res) => {
                             body: null
                         })
                     }
-                    let field = {path:newPath};
-                    let condition = {path:oldPath};
+                    let field = {path:newPath.split('/server/')[1]};
+                    let condition = {path:oldPath.split('/server/')[1]};
                     fileModel.update('photos',field,condition, (err, result) => {
                         if(err) {
                             return res.status(400).json({
@@ -166,22 +186,16 @@ const saveFile = (req, res) => {
                                 body: null
                             })
                         }
-                        return res.status(200).json({
-                            success: true,
-                            message: 'path update success',
-                            body: null
-                        })
-                    })
-                    return res.json({
-                        success: true,
-                        message: 'successfully saved',
-                        body: null
                     })
                 })
             }
+            return res.json({
+                success: true,
+                message: 'successfully saved',
+                body: null
+            })
         }
     })
-
 }
 
 module.exports = {
