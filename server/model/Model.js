@@ -18,6 +18,12 @@ class Model {
     let sql = `SELECT * FROM ${table} WHERE ?`;
     this.db.query(sql,obj,callback);
    }
+
+   // update the items
+   update = (table, fields, condition, callback) => {
+    let sql = `UPDATE ${table} SET ? WHERE ?`;
+    this.db.query(sql,[fields,condition],callback);
+   }
 }
 
 module.exports = Model;

@@ -34,9 +34,10 @@ export type AppContextValue = {
     photos: PhotosObj[];
     userUploadPhotos: Photos[];
     activeUploadModal: boolean;
-    uploadFile: (item:File) => void;
+    saveUpload: () => void;
     handleLogOut: () => void;
     handleLoadMore: () => void;
+    uploadFile: (item:File) => void;
     handleSearchTerm: (val:string) => void;
     handleActiveUploadModal: (param:boolean) => void;
 }
@@ -79,7 +80,7 @@ const AppProvider:FC<Props> = ({ children }) => {
     }
 
     const uploadFile = (imageItem:File) => {
-        let uploadUrl = 'http://localhost:8000/images/upload';
+        let uploadUrl = 'http://localhost:8000/uploads/';
         const formData = new FormData();
         formData.append('photosArray',imageItem);
         axios.post(uploadUrl, formData, {
@@ -91,6 +92,13 @@ const AppProvider:FC<Props> = ({ children }) => {
         }).catch((err) => {
             console.log(err);
         })
+    }
+
+    const saveUpload = () => {
+        let uploadUrl = 'http://localhost:8000/uploads/save';
+        axios.get(uploadUrl).then((res) => {
+            console.log(res);
+        }).catch(err => console.log(err));
     }
 
     // toggle upload modal
@@ -131,6 +139,7 @@ const AppProvider:FC<Props> = ({ children }) => {
             searchTerm,
             userUploadPhotos,
             activeUploadModal,
+            saveUpload,
             uploadFile,
             handleLogOut,
             handleLoadMore,

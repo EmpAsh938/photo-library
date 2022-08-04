@@ -5,7 +5,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'tmp/')
+        cb(null, 'uploads/tmp/')
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now()+'-'+Math.round(Math.random() * 1E9);
@@ -26,8 +26,8 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 const cpUpload = upload.fields([{name:'photosArray'}]);
 
 router.post('/', cpUpload, uploadFile);
-router.get('/:id', getUpload);
 router.post('/:id', saveFileDetails);
 router.get('/save', saveFile);
+router.get('/tmp/:id', getUpload);
 
 module.exports = router;

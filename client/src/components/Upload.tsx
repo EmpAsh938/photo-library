@@ -4,7 +4,7 @@ import { MdClose } from 'react-icons/md';
 
 const Upload = () => {
     const [resultFile, setResultFile] = useState<File | null>(null);
-    const { userUploadPhotos, handleActiveUploadModal, uploadFile } = useGlobalContext();
+    const { userUploadPhotos, saveUpload, handleActiveUploadModal, uploadFile } = useGlobalContext();
     const inputRef = useRef({} as HTMLInputElement);
 
     const handleChange = () => {
@@ -67,7 +67,7 @@ const Upload = () => {
                     )}  
                 </div>
                 <div className="my-5 grid place-items-center">
-                    <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600">Publish</button>
+                    <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600" onClick={saveUpload}>Publish</button>
                 </div>
             </div>
         </section>
