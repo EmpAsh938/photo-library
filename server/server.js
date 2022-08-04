@@ -5,8 +5,8 @@ const cors = require('cors');
 
 // imports
 const user = require('./routes/userRoutes');
-const image = require('./routes/imageRoutes');
-const userFile = require('./routes/userFileRoutes');
+const images = require('./routes/imageRoutes');
+const uploads = require('./routes/uploadRoutes');
 const pageNotFound = require('./routes/pageNotFound');
 
 // initializer
@@ -43,7 +43,7 @@ app.listen(port, () => {
 
 // routes
 app.use('/auth',user);
-app.use('/images',image);
-app.use('/uploads',userFile);
+app.use('/images',images);
+app.use('/uploads',uploads);
 app.all('*',pageNotFound);
 
