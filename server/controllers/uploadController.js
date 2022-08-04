@@ -45,7 +45,7 @@ const getUpload = (req, res) => {
         })
     }
     
-    let fields = {pid:id};
+    let fields = {path:'uploads/tmp/'+id};
     fileModel.select('photos',fields,(err, results) => {
         if(err) {
             return res.status(400).json({
@@ -65,7 +65,7 @@ const getUpload = (req, res) => {
             root: path.join(__dirname, '../uploads/tmp'),
             dotfiles: 'deny',
             headers: {
-                'Content-Type':results[0].extension,
+                'Content-Type':results[0].file_ext,
                 'x-timestamp': Date.now(),
                 'x-sent': true
             }
