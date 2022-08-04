@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState, MouseEvent } from "react";
+import { useEffect, useRef, MouseEvent } from "react";
 import { useGlobalContext } from "../context";
 import { MdClose } from 'react-icons/md';
 
 const Upload = () => {
-    const [resultFile, setResultFile] = useState<File | null>(null);
-    const { userUploadPhotos, saveUpload, handleActiveUploadModal, uploadFile } = useGlobalContext();
+    const { resultFile, userUploadPhotos, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useGlobalContext();
     const inputRef = useRef({} as HTMLInputElement);
 
     const handleChange = () => {
@@ -12,14 +11,14 @@ const Upload = () => {
         if(files) {
 
             if(files[0].type.split('/')[0] === 'image') {
-                setResultFile(files[0]);
+                handleResultFile(files[0]);
             }
         }
     }
 
     const handleClick = (event:MouseEvent) => {
         handleActiveUploadModal(false);
-        setResultFile(null);
+        handleResultFile(null);
     }
 
     // remove upload photos to be uploaded
@@ -31,7 +30,7 @@ const Upload = () => {
     
     useEffect(() => {
         if(resultFile) uploadFile(resultFile);
-        setResultFile(null);
+        handleResultFile(null);
     // eslint-disable-next-line
     }, [resultFile])
     return (

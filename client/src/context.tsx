@@ -34,11 +34,13 @@ export type AppContextValue = {
     photos: PhotosObj[];
     userUploadPhotos: Photos[];
     activeUploadModal: boolean;
+    resultFile: File | null;
     saveUpload: () => void;
     handleLogOut: () => void;
     handleLoadMore: () => void;
     uploadFile: (item:File) => void;
     handleSearchTerm: (val:string) => void;
+    handleResultFile: (val:File|null) => void;
     handleActiveUploadModal: (param:boolean) => void;
 }
 
@@ -54,12 +56,13 @@ export const AppContext = createContext<AppContextValue>({} as AppContextValue);
 const AppProvider:FC<Props> = ({ children }) => {
     const [page, setPage] = useState<number>(1);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [resultFile, setResultFile] = useState<File | null>(null);
     const [photos, setPhotos] = useState<PhotosObj[]>([]);
     const [userUploadPhotos, setUserUploadPhotos] = useState<Photos[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFailed, setIsFailed] = useState<boolean>(false);
-    const [activeUploadModal, setActiveModal] = useState<boolean>(false);
+    const [activeUploadModal, setActiveUploadModal] = useState<boolean>(false);
 
     const fetchRequest = async (term:string,pageno:number) => {
         setIsLoading(true);
@@ -77,6 +80,10 @@ const AppProvider:FC<Props> = ({ children }) => {
             console.log(error);
         }
         setIsLoading(false);
+    }
+
+    const handleResultFile = (param:File|null) => {
+        setResultFile(param);
     }
 
     const uploadFile = (imageItem:File) => {
@@ -97,14 +104,18 @@ const AppProvider:FC<Props> = ({ children }) => {
     const saveUpload = () => {
         let uploadUrl = 'http://localhost:8000/uploads/save';
         axios.get(uploadUrl).then((res) => {
-            console.log(res);
+            if(res.data.success) {
+                setResultFile(null);
+                setUserUploadPhotos([]);
+                setActiveUploadModal(false);
+            }
         }).catch(err => console.log(err));
     }
 
     // toggle upload modal
     const handleActiveUploadModal = (param:boolean) => {
-        if(param) setActiveModal(true);
-        else setActiveModal(false);
+        if(param) setActiveUploadModal(true);
+        else setActiveUploadModal(false);
     }
 
     // logout
@@ -136,6 +147,7 @@ const AppProvider:FC<Props> = ({ children }) => {
             isFailed,
             isLoading,
             isLoggedIn,
+            resultFile,
             searchTerm,
             userUploadPhotos,
             activeUploadModal,
@@ -144,6 +156,7 @@ const AppProvider:FC<Props> = ({ children }) => {
             handleLogOut,
             handleLoadMore,
             handleSearchTerm,
+            handleResultFile,
             handleActiveUploadModal
         }}>
             {children}

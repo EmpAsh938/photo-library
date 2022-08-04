@@ -11,7 +11,7 @@ const Home = () => {
         <Search />
         <Hero />
       </main>
-      {activeUploadModal && <Upload />}
+      {(activeUploadModal) && <Upload />}
     </>
   );
 }
