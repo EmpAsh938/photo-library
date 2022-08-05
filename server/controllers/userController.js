@@ -19,45 +19,40 @@ const signInUser = (req,res) => {
     let values = {email:mail};
     userModel.select('users',values,async (err, result) => {
         if(err) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message:err,
                 body: null
             })
-            return;
         }
         if(result.length === 0) {
-            res.status(401).json({
+            return res.status(401).json({
                 success:false,
                 message:"user not registered",
                 body: null
             })
-        } else {
-            let username = result[0].username;
-            let hash = result[0].password;
-            let isAvailable = await bcrypt.compare(password,hash);
-            if(isAvailable) {
-
-                // token creation
-                let token = generateAccessToken({username,email});
-                token = "Bearer "+token;
-                res.setHeader('Authorization',token);
-                res.status(200).json({
-                    success:true,
-                    message:"successfully logged in",
-                    body: null
-                })
-            } else {
-                res.status(401).json({
-                    success:false,
-                    message:"password does not match",
-                    body:null
-                })
-            }
-
         }
+        let username = result[0].username;
+        let hash = result[0].password;
+        let isAvailable = await bcrypt.compare(password,hash);
+        if(isAvailable) {
+            // token creation
+            let token = generateAccessToken({username,email});
+            token = "Bearer "+token;
+            res.setHeader('Authorization',token);
+            return res.status(200).json({
+                success:true,
+                message:"successfully logged in",
+                body: null
+            })
+        }
+        return res.status(401).json({
+            success:false,
+            message:"password does not match",
+            body:null
+        })
     })
-};
+}
 
 const registerUser = (req, res) => {
     const { firstname, lastname, username, email, password } = req.body;

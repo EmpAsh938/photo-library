@@ -1,6 +1,14 @@
 const express = require('express');
 const multer = require('multer');
-const { uploadFile, getUpload, saveFileDetails, saveFile, removeAll, removeOne } = require('../controllers/uploadController');
+const validateUser = require('../middleware/authMiddleware');
+const { 
+    saveFile, 
+    removeOne, 
+    getUpload, 
+    removeAll, 
+    uploadFile, 
+    saveFileDetails
+} = require('../controllers/uploadController');
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -25,12 +33,12 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 const cpUpload = upload.fields([{name:'photosArray'}]);
 
-router.post('/', cpUpload, uploadFile);
-router.post('/:id', saveFileDetails);
-router.get('/save', saveFile);
+router.post('/', validateUser, cpUpload, uploadFile);
+router.post('/:id', validateUser, saveFileDetails);
+router.get('/save', validateUser, saveFile);
 router.get('/tmp/:id', getUpload);
 router.get('/images/:id', getUpload);
-router.delete('/', removeAll);
-router.delete('/:id', removeOne);
+router.delete('/', validateUser, removeAll);
+router.delete('/:id', validateUser, removeOne);
 
 module.exports = router;

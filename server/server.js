@@ -42,8 +42,8 @@ app.listen(port, () => {
 })
 
 // routes
-app.use('/auth',user);
-app.use('/uploads',uploads);
-app.use('/images',images);
+app.use('/auth', user);
+app.use('/uploads', uploads);
+app.use('/images', images);
 app.all('*',pageNotFound);
 
