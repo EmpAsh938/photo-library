@@ -3,6 +3,7 @@ const connection = require('../db');
 const UserModel = require('../model/userModel');
 const generateRandomId = require('../utils/generateRandomId');
 const generateAccessToken = require('../utils/generateAccessToken');
+const userModel = new UserModel();
 
 const signInUser = (req,res) => {
     const { email, password } = req.body;
@@ -16,7 +17,7 @@ const signInUser = (req,res) => {
     }
     let mail = connection.escape(email).toLowerCase();
     let values = {email:mail};
-    new UserModel().select('users',values,async (err, result) => {
+    userModel.select('users',values,async (err, result) => {
         if(err) {
             res.status(400).json({
                 success: false,
@@ -77,7 +78,7 @@ const registerUser = (req, res) => {
     let emailField = {email:mail};
     let usernameField = {username:uname};
     let fields = `${emailField} or ${usernameField}`
-    new UserModel().select('users',fields, async (err,result) => {
+    userModel.select('users',fields, async (err,result) => {
         if(err) {
             res.status(400).json({
                 success:false,
@@ -91,7 +92,7 @@ const registerUser = (req, res) => {
             let hashed_pass = await bcrypt.hash(password,10);
             hashed_pass = hashed_pass.toString();
             let values = {id:uid,firstname:fname,lastname:lname,username:uname,email:mail,password:hashed_pass};
-            new UserModel().save('users',values,(err, results) => {
+            userModel.save('users',values,(err, results) => {
                 if(err || results.length === 0) {
                     return res.status(400).json({
                     success:false,
