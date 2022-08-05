@@ -48,7 +48,10 @@ export type AppContextValue = {
 
 enum ApiEndpoint {
     listPhoto = "photos",
-    searchPhoto = "search/photos"
+    searchPhoto = "search/photos",
+    uploadPhoto = "uploads/",
+    removePhoto = "uploads/",
+    savePhoto = "uploads/save/",
 }
 
 export const AppContext = createContext<AppContextValue>({} as AppContextValue);
@@ -88,7 +91,7 @@ const AppProvider:FC<Props> = ({ children }) => {
     }
 
     const uploadFile = (imageItem:File) => {
-        let uploadUrl = 'http://localhost:8000/uploads/';
+        let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.uploadPhoto}`;
         const formData = new FormData();
         formData.append('photosArray',imageItem);
         axios.post(uploadUrl, formData, {
@@ -103,7 +106,7 @@ const AppProvider:FC<Props> = ({ children }) => {
     }
 
     const saveUpload = () => {
-        let uploadUrl = 'http://localhost:8000/uploads/save';
+        let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.savePhoto}`;
         axios.get(uploadUrl).then((res) => {
             if(res.data.success) {
                 setResultFile(null);
@@ -114,18 +117,28 @@ const AppProvider:FC<Props> = ({ children }) => {
     }
 
     const removeUpload = async (id?:string) => {
-        let uploadUrl = 'http://localhost:8000/uploads/';
+        let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.removePhoto}`;
         let uploadUrlId = uploadUrl+id;
         if(id) {
             await axios.delete(uploadUrlId)
-            .then(res => console.log(res))
+            .then(res => {
+                if(res.data.success) {
+                    setUserUploadPhotos(prev => {
+                        return prev.filter(item => item.pid !== id);
+                    })
+                }
+            })
             .catch(err => console.log(err))
         } else {
             await axios.delete(uploadUrl)
-            .then(res => console.log(res))
+            .then(res => {
+                setUserUploadPhotos([]);
+                setActiveUploadModal(false);
+            })
             .catch(err => console.log(err))
         }
     }
+
 
     // toggle upload modal
     const handleActiveUploadModal = (param:boolean) => {
