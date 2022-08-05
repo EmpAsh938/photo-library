@@ -1,10 +1,10 @@
 import React, { ChangeEvent, FC } from 'react';
 
 import { BsSearch } from 'react-icons/bs'
-import { useGlobalContext } from '../context';
+import { useAppContext } from '../hooks/useAppContext';
 
 const Search:FC = () => {
-    const { searchTerm, handleSearchTerm } = useGlobalContext();
+    const { searchTerm, handleSearchTerm } = useAppContext();
 
     const handleChange = (event:ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();

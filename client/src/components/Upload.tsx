@@ -1,9 +1,9 @@
 import { useEffect, useRef, MouseEvent } from "react";
-import { useGlobalContext } from "../context";
+import { useAppContext } from "../hooks/useAppContext";
 import { MdClose } from 'react-icons/md';
 
 const Upload = () => {
-    const { resultFile, userUploadPhotos, removeUpload, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useGlobalContext();
+    const { resultFile, userUploadPhotos, removeUpload, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useAppContext();
     const inputRef = useRef({} as HTMLInputElement);
 
     const handleChange = () => {

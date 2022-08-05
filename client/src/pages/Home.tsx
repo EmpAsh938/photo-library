@@ -1,9 +1,9 @@
 import { Navbar, Hero, Search } from '../components';
 import Upload from '../components/Upload';
-import { useGlobalContext } from '../context';
+import { useAppContext } from '../hooks/useAppContext';
 
 const Home = () => {
-  const { activeUploadModal } = useGlobalContext();
+  const { activeUploadModal } = useAppContext();
   return (
     <>
       <Navbar />

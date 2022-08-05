@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useGlobalContext } from '../context';
+import { useAppContext } from '../hooks/useAppContext';
 
 const Navbar = () => {
-    const { isLoggedIn, activeUploadModal, handleActiveUploadModal } = useGlobalContext();
+    const { isLoggedIn, activeUploadModal, handleActiveUploadModal } = useAppContext();
 
     const navigate = useNavigate();
 

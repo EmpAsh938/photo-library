@@ -182,6 +182,4 @@ const AppProvider:FC<Props> = ({ children }) => {
     )
 }
 
-export const useGlobalContext = () => useContext(AppContext);
-
 export default AppProvider;

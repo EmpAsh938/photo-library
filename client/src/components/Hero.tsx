@@ -1,8 +1,8 @@
 import  { FC } from 'react';
-import { useGlobalContext } from '../context';
+import { useAppContext } from '../hooks/useAppContext';
 
 const Hero:FC = () => {
-    const { photos, isLoading, isFailed, handleLoadMore } = useGlobalContext();
+    const { photos, isLoading, isFailed, handleLoadMore } = useAppContext();
 
     if (isLoading) {
         return (

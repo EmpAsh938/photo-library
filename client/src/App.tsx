@@ -3,12 +3,12 @@ import {
   Routes,
   Route
 } from 'react-router-dom';
-import { useGlobalContext } from './context';
+import { useAuthContext } from './hooks/useAuthContext';
 import { ProtectedRoute } from './helper/routes';
 import { Home, Login, Signup, Error} from './pages';
 
 const App = () => {
-  const { isLoggedIn } = useGlobalContext();
+  const { isLoggedIn } = useAuthContext();
   return (
     <BrowserRouter>
       <Routes>
