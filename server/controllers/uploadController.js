@@ -189,7 +189,7 @@ const saveFile = (req, res) => {
                     }
                 })
             }
-            return res.json({
+            return res.status(200).json({
                 success: true,
                 message: 'successfully saved',
                 body: null

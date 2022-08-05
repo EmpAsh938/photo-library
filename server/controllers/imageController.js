@@ -1,6 +1,9 @@
 const path = require('path');
 const FileModel = require('../model/fileModel');
 
+
+const fileModel = new FileModel();
+
 const getAllFile = (req, res) => {
     const { page } = req.query;
     if(!page || isNaN(page)) {
@@ -16,12 +19,12 @@ const getAllFile = (req, res) => {
     })
 }
 
-const getSingleFile = (req, res) => {
+const getMatching = (req, res) => {
         
 }
 
 
 module.exports = {
     getAllFile,
-    getSingleFile,
+    getMatching,
 }
