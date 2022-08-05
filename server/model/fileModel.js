@@ -6,6 +6,10 @@ class FileModel extends Model {
         super();
     }
    
+    readAll = (table,obj,callback) => {
+        let sql = `SELECT * from ${table} LIMIT ?`;
+        this.db.query(sql,[obj],callback);
+    }
    
 
    
