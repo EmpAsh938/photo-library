@@ -43,7 +43,7 @@ app.listen(port, () => {
 
 // routes
 app.use('/auth',user);
-app.use('/images',images);
 app.use('/uploads',uploads);
+app.use('/images',images);
 app.all('*',pageNotFound);
 

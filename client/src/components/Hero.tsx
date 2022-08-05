@@ -36,42 +36,51 @@ const Hero:FC = () => {
         <section className='px-4 max-w-screen-2xl mx-auto'>
             <div className='py-10 flex flex-wrap items-start gap-2'>
                 <div className='flex-1 flex flex-col justify-between gap-2'>
-                    {photos.slice(0,first_mid).map((item,index) => {
-                        const { id, alt_description, urls: { regular } } = item;
+                    {photos.slice(0,first_mid).map((item) => {
+                        const { pid, path } = item;
+                        let alt_text_arr = path.split('/');
+                        let alt_text = alt_text_arr[alt_text_arr.length-1];
+                        let img_url = `${process.env.REACT_APP_API_ENDPOINT}/${path}`;
                         return (
-                            <div key={id+index} className='flex-1 relative'>
+                            <div key={pid} className='flex-1 relative'>
                                 <img 
-                                    alt={alt_description}
-                                    src={regular}
+                                    alt={alt_text}
+                                    src={img_url}
                                     />
                             </div>
                         )
                     })}
                 </div>
                 <div className='hidden flex-1 sm:flex flex-col justify-between gap-2'>
-                {photos.slice(first_mid,second_mid).map((item,index) => {
-                    const { id, alt_description, urls: { regular } } = item;
+                {photos.slice(first_mid,second_mid).map((item) => {
+                    const { pid, path } = item;
+                    let alt_text_arr = path.split('/');
+                    let alt_text = alt_text_arr[alt_text_arr.length-1];
+                    let img_url = `${process.env.REACT_APP_API_ENDPOINT}/${path}`;
                     return (
-                        <div key={id+index} className='flex-1 relative'>
+                        <div key={pid} className='flex-1 relative'>
                             <img 
-                                alt={alt_description}
-                                src={regular}
-                            />
+                                alt={alt_text}
+                                src={img_url}
+                                />
                         </div>
-                        )
+                    )
                     })}
                 </div>
                 <div className='hidden flex-1 lg:flex flex-col justify-center gap-2'>
-                {photos.slice(second_mid,len).map((item,index) => {
-                    const { id, alt_description, urls: { regular } } = item;
-                        return (
-                            <div key={id+index} className='flex-1 relative'>
-                                <img 
-                                    alt={alt_description}
-                                    src={regular}
+                {photos.slice(second_mid,len).map((item) => {
+                    const { pid, path } = item;
+                    let alt_text_arr = path.split('/');
+                    let alt_text = alt_text_arr[alt_text_arr.length-1];
+                    let img_url = `${process.env.REACT_APP_API_ENDPOINT}/${path}`;
+                    return (
+                        <div key={pid} className='flex-1 relative'>
+                            <img 
+                                alt={alt_text}
+                                src={img_url}
                                 />
-                            </div>
-                        )
+                        </div>
+                    )
                     })}
                 </div>
             </div>

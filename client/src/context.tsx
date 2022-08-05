@@ -5,16 +5,6 @@ type Props = {
     children: ReactNode;
 }
 
-type urlType = {
-    regular: string;
-}
-
-type PhotosObj = {
-    id: string;
-    alt_description: string;
-    urls: urlType;
-}
-
 type Photos = {
     pid: string;
     path: string;
@@ -31,7 +21,7 @@ export type AppContextValue = {
     isFailed: boolean;
     isLoading: boolean;
     searchTerm: string;
-    photos: PhotosObj[];
+    photos: Photos[];
     userUploadPhotos: Photos[];
     activeUploadModal: boolean;
     resultFile: File | null;
@@ -47,8 +37,8 @@ export type AppContextValue = {
 
 
 enum ApiEndpoint {
-    listPhoto = "photos",
-    searchPhoto = "search/photos",
+    listPhoto = "images/list",
+    searchPhoto = "images/search",
     uploadPhoto = "uploads/",
     removePhoto = "uploads/",
     savePhoto = "uploads/save/",
@@ -61,7 +51,7 @@ const AppProvider:FC<Props> = ({ children }) => {
     const [page, setPage] = useState<number>(1);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [resultFile, setResultFile] = useState<File | null>(null);
-    const [photos, setPhotos] = useState<PhotosObj[]>([]);
+    const [photos, setPhotos] = useState<Photos[]>([]);
     const [userUploadPhotos, setUserUploadPhotos] = useState<Photos[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -72,13 +62,13 @@ const AppProvider:FC<Props> = ({ children }) => {
         setIsLoading(true);
         let url = '';
         if(term){
-            url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.searchPhoto}/?client_id=${process.env.REACT_APP_ACCESS_KEY}&query=${term}&page=${pageno}&per_page=30`;
-        } else url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.listPhoto}/?client_id=${process.env.REACT_APP_ACCESS_KEY}&page=${pageno}&per_page=30`;
+            url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.searchPhoto}/?query=${term}&page=${pageno}&per_page=30`;
+        } else url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.listPhoto}/?page=${pageno}&per_page=30`;
         try {
             const response = await axios.get(url);
-            const results = response.data;
+            const results = response.data.body;
+            console.log(results);
             if(Array.isArray(results)) setPhotos([...photos, ...results]);
-            else setPhotos([...results.results]);
         } catch (error) {
             setIsFailed(true);
             console.log(error);

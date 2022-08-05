@@ -29,6 +29,7 @@ router.post('/', cpUpload, uploadFile);
 router.post('/:id', saveFileDetails);
 router.get('/save', saveFile);
 router.get('/tmp/:id', getUpload);
+router.get('/images/:id', getUpload);
 router.delete('/', removeAll);
 router.delete('/:id', removeOne);
 

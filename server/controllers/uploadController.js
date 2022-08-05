@@ -44,8 +44,7 @@ const getUpload = (req, res) => {
             body: null
         })
     }
-    
-    let fields = {path:'uploads/tmp/'+id};
+    let fields = {path:'uploads'+req.path};
     fileModel.select('photos',fields,(err, results) => {
         if(err) {
             return res.status(400).json({
@@ -61,8 +60,9 @@ const getUpload = (req, res) => {
                 body: null
             })
         }
+        let root_path = req.path.split('/')[1];
         const options = {
-            root: path.join(__dirname, '../uploads/tmp'),
+            root: path.join(__dirname, `../uploads/${root_path}`),
             dotfiles: 'deny',
             headers: {
                 'Content-Type':results[0].file_ext,
