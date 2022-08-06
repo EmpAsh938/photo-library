@@ -17,7 +17,6 @@ type Photos = {
 
 export type AppContextValue = {
     page: number;
-    isLoggedIn: boolean;
     isFailed: boolean;
     isLoading: boolean;
     searchTerm: string;
@@ -53,7 +52,6 @@ const AppProvider:FC<Props> = ({ children }) => {
     const [resultFile, setResultFile] = useState<File | null>(null);
     const [photos, setPhotos] = useState<Photos[]>([]);
     const [userUploadPhotos, setUserUploadPhotos] = useState<Photos[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFailed, setIsFailed] = useState<boolean>(false);
     const [activeUploadModal, setActiveUploadModal] = useState<boolean>(false);
@@ -135,10 +133,6 @@ const AppProvider:FC<Props> = ({ children }) => {
         setActiveUploadModal(param);
     }
 
-    // logout
-    const handleLogOut = () => {
-        setIsLoggedIn(false);
-    }
 
     // search photos
     const handleSearchTerm = (input:string) => {
@@ -163,7 +157,6 @@ const AppProvider:FC<Props> = ({ children }) => {
             photos,
             isFailed,
             isLoading,
-            isLoggedIn,
             resultFile,
             searchTerm,
             userUploadPhotos,
@@ -171,7 +164,6 @@ const AppProvider:FC<Props> = ({ children }) => {
             saveUpload,
             uploadFile,
             removeUpload,
-            handleLogOut,
             handleLoadMore,
             handleSearchTerm,
             handleResultFile,

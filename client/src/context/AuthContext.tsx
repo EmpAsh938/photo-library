@@ -12,6 +12,13 @@ type UserObj = {
 type AuthContextValue = {
     isLoggedIn: boolean;
     user: UserObj;
+    handleLogin: () => void;
+    handleRegister: () => void;
+}
+
+enum ApiEndPoint {
+    login = 'auth/login',
+    register = 'auth/register'
 }
 
 
@@ -24,6 +31,16 @@ const AuthProvider = ({ children }:Props) => {
         token: ''
     });
 
+
+    const handleLogin = () => {
+        let url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndPoint.login}`;
+    }
+    
+    const handleRegister = () => {
+        let url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndPoint.register}`;
+
+    }
+
     useEffect(() => {
 
     // eslint-disable-next-line
@@ -32,6 +49,8 @@ const AuthProvider = ({ children }:Props) => {
         <AuthContext.Provider value={{
             user,
             isLoggedIn,
+            handleLogin,
+            handleRegister
         }}>
             { children }
         </AuthContext.Provider>

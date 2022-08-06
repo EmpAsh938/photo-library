@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Login = () => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     return (
         <main className='min-h-screen grid place-items-center p-2 bg-slate-50'>
             <section className='max-w-sm w-full p-4 border border-solid border-slate-300 rounded flex flex-col gap-2 bg-white'>
@@ -8,11 +11,23 @@ const Login = () => {
                 <form className='flex flex-col gap-4 p-2'>
                     <div className='flex flex-col'>
                         <label htmlFor="email">Email</label>
-                        <input className='border border-solid border-slate-300 outline-none px-4 py-1' type="text" id="email" />
+                        <input 
+                        className='border border-solid border-slate-300 outline-none px-4 py-1' 
+                        type="text" 
+                        id="email" 
+                        value={email}
+                        onChange={(e)=>setEmail(e.target.value)}
+                        />
                     </div>
                     <div className='flex flex-col'>
                         <label htmlFor="password">Password</label>
-                        <input className='border border-solid border-slate-300 outline-none px-4 py-1' type="password" id="password" />
+                        <input 
+                        className='border border-solid border-slate-300 outline-none px-4 py-1' 
+                        type="password" 
+                        id="password" 
+                        value={password}
+                        onChange={(e)=>setPassword(e.target.value)}
+                        />
                     </div>
                     <div className='flex gap-1 text-sm'>
                         <p>New Here?</p>
