@@ -17,15 +17,14 @@ type Photos = {
 
 export type AppContextValue = {
     page: number;
+    photos: Photos[];
     isFailed: boolean;
     isLoading: boolean;
     searchTerm: string;
-    photos: Photos[];
-    userUploadPhotos: Photos[];
-    activeUploadModal: boolean;
     resultFile: File | null;
+    activeUploadModal: boolean;
+    userUploadPhotos: Photos[];
     saveUpload: () => void;
-    handleLogOut: () => void;
     handleLoadMore: () => void;
     uploadFile: (item:File) => void;
     removeUpload: (id?:string) => void;

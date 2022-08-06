@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../hooks/useAppContext';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const Navbar = () => {
-    const { isLoggedIn, activeUploadModal, handleActiveUploadModal } = useAppContext();
+    const { activeUploadModal, handleActiveUploadModal } = useAppContext();
+    const { isLoggedIn } = useAuthContext();
 
     const navigate = useNavigate();
 
