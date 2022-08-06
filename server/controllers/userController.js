@@ -8,12 +8,11 @@ const userModel = new UserModel();
 const signInUser = (req,res) => {
     const { email, password } = req.body;
     if(!email || !password) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: 'fields can\'t be empty',
             body: null
         })
-        return;
     }
     let mail = connection.escape(email).toLowerCase();
     let values = {email:mail};
@@ -43,7 +42,12 @@ const signInUser = (req,res) => {
             return res.status(200).json({
                 success:true,
                 message:"successfully logged in",
-                body: null
+                body: [
+                    {
+                        email,
+                        token
+                    }
+                ]
             })
         }
         return res.status(401).json({
@@ -57,12 +61,11 @@ const signInUser = (req,res) => {
 const registerUser = (req, res) => {
     const { firstname, lastname, username, email, password } = req.body;
     if(!firstname || !lastname || !username || !email || !password) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: "Fields can't be empty.",
             body: null
         })
-        return;
     }
     // escape from sqli
     let fname = connection.escape(firstname).toLowerCase();
@@ -75,12 +78,11 @@ const registerUser = (req, res) => {
     let fields = `${emailField} or ${usernameField}`
     userModel.select('users',fields, async (err,result) => {
         if(err) {
-            res.status(400).json({
+            return res.status(400).json({
                 success:false,
                 message:err,
                 body: null
             })
-            return;
         }
         if(result.length == 0) {
             let uid = generateRandomId(20).toString();
@@ -90,10 +92,10 @@ const registerUser = (req, res) => {
             userModel.save('users',values,(err, results) => {
                 if(err || results.length === 0) {
                     return res.status(400).json({
-                    success:false,
-                    message:err,
-                    body: null
-                })
+                        success:false,
+                        message:err,
+                        body: null
+                    })
                 }
                 // token creation
                 let token = generateAccessToken({username,email});
@@ -102,7 +104,10 @@ const registerUser = (req, res) => {
                 res.status(201).json({
                     success:true,
                     message:"successfully registered",
-                    body: null
+                    body: [{
+                        email,
+                        token
+                    }]
                 })
             })
         } else {
