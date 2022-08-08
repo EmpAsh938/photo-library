@@ -1,10 +1,14 @@
-import { useEffect, useRef, MouseEvent } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useAppContext } from "../hooks/useAppContext";
 import { MdClose } from 'react-icons/md';
 
 const Upload = () => {
-    const { resultFile, userUploadPhotos, removeUpload, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useAppContext();
+    const { resultFile,  updateUpload, userUploadPhotos, removeUpload, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useAppContext();
     const inputRef = useRef({} as HTMLInputElement);
+
+    const [description, setDescription] = useState<string>('');
+    const [tags, setTags] = useState<string[]>([]);
+    const [tagsValue, setTagsValue] = useState<string>('');
 
     const handleChange = () => {
         const files = inputRef.current.files;
@@ -16,17 +20,37 @@ const Upload = () => {
         }
     }
 
-    const handleClick = (event:MouseEvent) => {
+    const handleUploadUpdate = (id:string) => {
+        if(description || tags.length > 0) {
+            updateUpload(id,description,tags);
+        }
+    }
+
+    const handleClick = () => {
         if(userUploadPhotos.length === 0) {
             handleActiveUploadModal(false);
             handleResultFile(null);
         }
     }
+
+    const handleTagsChange = (e:ChangeEvent<HTMLInputElement>) => {
+        if(tagsValue && e.target.value.charAt(tagsValue.length-1) === ' ') {
+            setTags([...tags,tagsValue.trim()]);
+            setTagsValue('');
+        } else {
+            setTagsValue(e.target.value);
+        }
+    }
+
+    const handleTagsActive = (tag:string) => {
+        setTags(prev => {
+            return prev.filter(item => item !== tag);
+        })
+    }
     
     useEffect(() => {
         if(resultFile) uploadFile(resultFile);
         handleResultFile(null);
-    // eslint-disable-next-line
     }, [resultFile])
     return (
         <section className="fixed w-full min-h-screen h-full top-0 left-0 bg-[rgba(0,0,0,0.9)] p-2 z-20 overflow-y-scroll overflow-x-hidden">
@@ -48,12 +72,23 @@ const Upload = () => {
                                 <div key={item.pid} className="relative flex gap-2 border border-solid border-slate-400 pt-4">
                                     <button onClick={() => removeUpload(item.pid)} className="absolute top-0 left-0 w-fit text-red-700"><MdClose /></button>
                                     <div>
-                                        <img src={'http://localhost:8000/'+item.path} alt={item.title} />
+                                        <img src={`${process.env.REACT_APP_API_ENDPOINT}/${item.path}`} alt={item.title} />
                                     </div>
                                     <div className="flex flex-col gap-1">
                                         
-                                        <input type="text" placeholder="Add Title" id="title" className="outline-none border border-slate-300 p-1 px-4"/>
-                                        <input type="text" placeholder="Add Tags" id="tags" className="outline-none border border-slate-300 p-1 px-4"/>
+                                        <input value={description} onChange={e=>setDescription(e.target.value)} type="text" placeholder="Add Description" id="title" className="outline-none border border-slate-300 p-1 px-4"/>
+                                        <div className="flex gap-2 flex-wrap my-2">
+                                            {tags.length > 0 && tags.map(tagItem => {
+                                                return (
+                                                    <div className="relative p-1 bg-slate-200 rounded-sm text-xs text-slate-500">
+                                                        <span key={tagItem} className="w-full h-full">{tagItem}</span>
+                                                        <button className="absolute top-0 right-0 text-red-500" onClick={()=>handleTagsActive(tagItem)}><MdClose /></button>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                        <input value={tagsValue} onChange={handleTagsChange} type="text" placeholder="Add Tags" id="tags" className="outline-none border border-slate-300 p-1 px-4"/>
+                                        <button onClick={() => handleUploadUpdate(item.pid)}>Add</button>
                                     </div>
                                 </div>
                             )

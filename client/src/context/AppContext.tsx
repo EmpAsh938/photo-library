@@ -1,5 +1,6 @@
-import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, FC, ReactNode, useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 type Props = {
     children: ReactNode;
@@ -25,6 +26,7 @@ export type AppContextValue = {
     activeUploadModal: boolean;
     userUploadPhotos: Photos[];
     saveUpload: () => void;
+    updateUpload: (id:string,desc:string,tags:string[]) => void;
     handleLoadMore: () => void;
     uploadFile: (item:File) => void;
     removeUpload: (id?:string) => void;
@@ -55,6 +57,8 @@ const AppProvider:FC<Props> = ({ children }) => {
     const [isFailed, setIsFailed] = useState<boolean>(false);
     const [activeUploadModal, setActiveUploadModal] = useState<boolean>(false);
 
+    const { user } = useAuthContext();
+
     const fetchRequest = async (term:string,pageno:number) => {
         setIsLoading(true);
         let url = '';
@@ -83,7 +87,8 @@ const AppProvider:FC<Props> = ({ children }) => {
         formData.append('photosArray',imageItem);
         axios.post(uploadUrl, formData, {
             headers: {
-                'Content-Type':'multipart/form-data'
+                'Content-Type':'multipart/form-data',
+                'Authorization': user.token
             }
         }).then((res) => {
             if(res.data.body) setUserUploadPhotos([...userUploadPhotos, res.data.body]);
@@ -94,7 +99,11 @@ const AppProvider:FC<Props> = ({ children }) => {
 
     const saveUpload = () => {
         let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.savePhoto}`;
-        axios.get(uploadUrl).then((res) => {
+        axios.get(uploadUrl,{
+            headers: {
+                'Authorization': user.token
+            }
+        }).then((res) => {
             if(res.data.success) {
                 setResultFile(null);
                 setUserUploadPhotos([]);
@@ -107,7 +116,11 @@ const AppProvider:FC<Props> = ({ children }) => {
         let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.removePhoto}`;
         let uploadUrlId = uploadUrl+id;
         if(id) {
-            await axios.delete(uploadUrlId)
+            await axios.delete(uploadUrlId,{
+                headers: {
+                    'Authorization': user.token
+                }
+            })
             .then(res => {
                 if(res.data.success) {
                     setUserUploadPhotos(prev => {
@@ -117,7 +130,11 @@ const AppProvider:FC<Props> = ({ children }) => {
             })
             .catch(err => console.log(err))
         } else {
-            await axios.delete(uploadUrl)
+            await axios.delete(uploadUrl, {
+                headers: {
+                    'Authorization': user.token
+                }
+            })
             .then(res => {
                 setUserUploadPhotos([]);
                 setActiveUploadModal(false);
@@ -126,6 +143,23 @@ const AppProvider:FC<Props> = ({ children }) => {
         }
     }
 
+    // add image tag and description
+    const updateUpload = async (id:string,desc:string,tag:string[]) => {
+        let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.uploadPhoto}/${id}`;
+        try {
+            const response = await axios.post(uploadUrl, {
+                description:desc,
+                tags: tag.join(',')
+            }, {
+                headers: {
+                    'Authorization': user.token
+                }
+            }
+            )
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     // toggle upload modal
     const handleActiveUploadModal = (param:boolean) => {
@@ -163,6 +197,7 @@ const AppProvider:FC<Props> = ({ children }) => {
             saveUpload,
             uploadFile,
             removeUpload,
+            updateUpload,
             handleLoadMore,
             handleSearchTerm,
             handleResultFile,
