@@ -3,7 +3,7 @@ import { useAppContext } from "../hooks/useAppContext";
 import { MdClose } from 'react-icons/md';
 
 const Upload = () => {
-    const { resultFile,  updateUpload, userUploadPhotos, removeUpload, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useAppContext();
+    const { uploadError, resultFile,  updateUpload, userUploadPhotos, removeUpload, saveUpload, handleResultFile, handleActiveUploadModal, uploadFile } = useAppContext();
     const inputRef = useRef({} as HTMLInputElement);
 
     const [description, setDescription] = useState<string>('');
@@ -51,7 +51,11 @@ const Upload = () => {
     useEffect(() => {
         if(resultFile) uploadFile(resultFile);
         handleResultFile(null);
+    // eslint-disable-next-line
     }, [resultFile])
+
+
+    console.log(uploadError)
     return (
         <section className="fixed w-full min-h-screen h-full top-0 left-0 bg-[rgba(0,0,0,0.9)] p-2 z-20 overflow-y-scroll overflow-x-hidden">
             <div className="absolute w-full h-full z-30" onClick={handleClick}></div>
@@ -61,6 +65,7 @@ const Upload = () => {
                 <button className="text-3xl absolute right-4 top-2 text-red-500" onClick={handleClick}><MdClose /></button>
                 <h2 className="text-center text-2xl font-medium
                  mb-4">Upload Images</h2>
+                 {uploadError &&<p className="text-center bg-slate-400 text-white mb-2">{uploadError}</p>}
                 <div className="border-2 border-dashed border-slate-500 p-2 py-4 grid place-items-center">
                     <label htmlFor="browse" className="border border-solid border-slate-400 rounded-sm px-2 py-1 hover:cursor-pointer">Browse</label>
                     <input ref={inputRef} type="file" id="browse" className="hidden" onChange={handleChange} accept="image/*" />

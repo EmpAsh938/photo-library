@@ -27,7 +27,8 @@ enum LskConst {
 
 enum ApiEndPoint {
     login = 'auth/login',
-    register = 'auth/register'
+    register = 'auth/register',
+    verify = 'auth/verify'
 }
 
 
@@ -81,6 +82,30 @@ const AuthProvider = ({ children }:Props) => {
             }
     }
 
+    const handleVerification = async (token: string) => {
+        let url = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndPoint.verify}`;
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    'Authorization': token
+                }
+            });
+            const result = response.data;
+            setIsLoggedIn(true);
+            setUser({
+                ...user,
+                email: result.email,
+                token: result.token
+            })
+        } catch (error) {
+            setIsLoggedIn(false);
+            setUser({
+                email: '',
+                token: ''
+            })
+        }
+    }
+
     const handleError = (msg:string,type:string) => {
         if(type==='login') {
             setLoginError(msg);
@@ -99,12 +124,10 @@ const AuthProvider = ({ children }:Props) => {
 
     useEffect(() => {
         const getLSK = JSON.parse(localStorage.getItem(LskConst.AuthLSK) || '{}');
-        if(getLSK) {
-            setIsLoggedIn(true);
-            setUser({
-                ...getLSK
-            })
+        if(Object.keys(getLSK).length !== 0) {
+            handleVerification(getLSK.token);
         }
+    // eslint-disable-next-line
     }, [])
 
     useEffect(() => {

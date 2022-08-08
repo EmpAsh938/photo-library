@@ -24,6 +24,7 @@ export type AppContextValue = {
     searchTerm: string;
     resultFile: File | null;
     activeUploadModal: boolean;
+    uploadError: string;
     userUploadPhotos: Photos[];
     saveUpload: () => void;
     updateUpload: (id:string,desc:string,tags:string[]) => void;
@@ -55,6 +56,7 @@ const AppProvider:FC<Props> = ({ children }) => {
     const [userUploadPhotos, setUserUploadPhotos] = useState<Photos[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFailed, setIsFailed] = useState<boolean>(false);
+    const [uploadError, setUploadError] = useState<string>('');
     const [activeUploadModal, setActiveUploadModal] = useState<boolean>(false);
 
     const { user } = useAuthContext();
@@ -68,7 +70,6 @@ const AppProvider:FC<Props> = ({ children }) => {
         try {
             const response = await axios.get(url);
             const results = response.data.body;
-            console.log(results);
             if(Array.isArray(results)) setPhotos([...photos, ...results]);
         } catch (error) {
             setIsFailed(true);
@@ -93,7 +94,7 @@ const AppProvider:FC<Props> = ({ children }) => {
         }).then((res) => {
             if(res.data.body) setUserUploadPhotos([...userUploadPhotos, res.data.body]);
         }).catch((err) => {
-            console.log(err);
+            setUploadError(err);
         })
     }
 
@@ -109,7 +110,7 @@ const AppProvider:FC<Props> = ({ children }) => {
                 setUserUploadPhotos([]);
                 setActiveUploadModal(false);
             }
-        }).catch(err => console.log(err));
+        }).catch(err => setUploadError(err));
     }
 
     const removeUpload = async (id?:string) => {
@@ -128,7 +129,7 @@ const AppProvider:FC<Props> = ({ children }) => {
                     })
                 }
             })
-            .catch(err => console.log(err))
+            .catch(err => setUploadError(err))
         } else {
             await axios.delete(uploadUrl, {
                 headers: {
@@ -139,15 +140,15 @@ const AppProvider:FC<Props> = ({ children }) => {
                 setUserUploadPhotos([]);
                 setActiveUploadModal(false);
             })
-            .catch(err => console.log(err))
+            .catch(err => setUploadError(err))
         }
     }
 
     // add image tag and description
     const updateUpload = async (id:string,desc:string,tag:string[]) => {
-        let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.uploadPhoto}/${id}`;
+        let uploadUrl = `${process.env.REACT_APP_API_ENDPOINT}/${ApiEndpoint.uploadPhoto}${id}`;
         try {
-            const response = await axios.post(uploadUrl, {
+            await axios.post(uploadUrl, {
                 description:desc,
                 tags: tag.join(',')
             }, {
@@ -156,8 +157,8 @@ const AppProvider:FC<Props> = ({ children }) => {
                 }
             }
             )
-        } catch (error) {
-            console.log(error);
+        } catch (err:any) {
+            setUploadError(err);
         }
     }
 
@@ -192,6 +193,7 @@ const AppProvider:FC<Props> = ({ children }) => {
             isLoading,
             resultFile,
             searchTerm,
+            uploadError,
             userUploadPhotos,
             activeUploadModal,
             saveUpload,

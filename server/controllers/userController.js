@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const connection = require('../db');
 const UserModel = require('../model/userModel');
 const generateRandomId = require('../utils/generateRandomId');
@@ -120,7 +121,38 @@ const registerUser = (req, res) => {
     })
 }
 
+const verifyUser = (req, res) => {
+    const userToken = req.headers.authorization.split('Bearer')[1].trim();
+    const decoded = jwt.decode(userToken);
+    const fields = {email:decoded.email};
+    userModel.select('users',fields, (err, result) => {
+        if(err) {
+            return res.status(401).json({
+                success: false,
+                message: err,
+                body: null
+            })
+        }
+        if(result.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: 'user does not exist',
+                body: null
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'verified',
+            body: {
+                email: decoded.email,
+                token: req.headers.authorization
+            }
+        })
+    })
+}
+
 module.exports = {
     signInUser,
-    registerUser
+    registerUser,
+    verifyUser,
 }
