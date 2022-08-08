@@ -31,6 +31,9 @@ const getAllFile = (req, res) => {
             })
         }
 
+
+       console.log(req.headers);
+
         if(result.length === 0) {
             return res.status(200).json({
                 success: true,

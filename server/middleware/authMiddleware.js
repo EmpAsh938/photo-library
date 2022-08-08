@@ -6,10 +6,9 @@ const validateUser = async (req, res, next) => {
         req.headers.authorization &&
         req.headers.authorization.startsWith('Bearer')
     ) {
-
+        token = req.headers.authorization.split('Bearer')[1].trim();
         try {
-            const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-            console.log(decoded);
+            jwt.verify(token, process.env.TOKEN_SECRET);
             next();
         } catch (error) {
             return res.status(401).json({
