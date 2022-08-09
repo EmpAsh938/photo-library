@@ -55,7 +55,6 @@ const Upload = () => {
     }, [resultFile])
 
 
-    console.log(uploadError)
     return (
         <section className="fixed w-full min-h-screen h-full top-0 left-0 bg-[rgba(0,0,0,0.9)] p-2 z-20 overflow-y-scroll overflow-x-hidden">
             <div className="absolute w-full h-full z-30" onClick={handleClick}></div>

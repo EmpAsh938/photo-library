@@ -127,7 +127,6 @@ const registerUser = (req, res) => {
 const verifyUser = (req, res) => {
     const userToken = req.headers.authorization.split('Bearer')[1].trim();
     const decoded = jwt.decode(userToken);
-    console.log(decoded);
     const fields = {id:decoded.id};
     userModel.select('users',fields, (err, result) => {
         if(err) {

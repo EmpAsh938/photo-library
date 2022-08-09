@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const connection = require('../db');
 const FileModel = require('../model/fileModel');
 
@@ -8,15 +9,35 @@ const fileModel = new FileModel();
 const uploadFile = (req, res) => {
     const file = req.files;
     if(!file || file['photosArray']===undefined) {
-        res.status(400).json({
+        return res.status(400).json({
             success:false,
             message:'Wrong extension/mime type or no valid file',
             body: null
         })
-    } else {
-        let extension = file.photosArray[0].mimetype;
-        let id = Math.floor(Math.random() * 1E10);
-        let values = {pid:id,path:file.photosArray[0].path,creator_name:'author',tags:'',description:'',file_ext:extension,creator_id:'344nrt3pg5s5yqqy8mrs'};
+    }
+    let extension = file.photosArray[0].mimetype;
+    let id = Math.floor(Math.random() * 1E10);
+    let token = req.headers.authorization.split('Bearer')[1].trim();
+    let decoded = jwt.decode(token);
+    let userId = decoded.id;
+    let field = {id:userId};
+    fileModel.select('users', field, (err, doc) => {
+        if(err) {
+            return res.status(401).json({
+                success: false,
+                message: err,
+                body: null
+            })
+        }
+        if(doc.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: 'user not found',
+                body: null
+            })
+        }
+        let authorName = doc[0].firstname + doc[0].lastname;
+        let values = {pid:id,path:file.photosArray[0].path,creator_name:authorName,tags:'',description:'',file_ext:extension,creator_id:userId};
         fileModel.save('photos',values,(err, results) => {
             if(err || results.length === 0) {
                 return res.status(400).json({
@@ -25,14 +46,13 @@ const uploadFile = (req, res) => {
                     body: null
                 })
             }
-            
             return res.status(201).json({
                 success:true,
                 message:"successfully uploaded",
                 body: values
             })
         })
-    }
+    })
 }
 
 const getUpload = (req, res) => {
