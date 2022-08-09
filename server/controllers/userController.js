@@ -34,10 +34,11 @@ const signInUser = (req,res) => {
         }
         let username = result[0].username;
         let hash = result[0].password;
+        let id = result[0].id;
         let isAvailable = await bcrypt.compare(password,hash);
         if(isAvailable) {
             // token creation
-            let token = generateAccessToken({username,email});
+            let token = generateAccessToken({username,id,email});
             token = "Bearer "+token;
             res.setHeader('Authorization',token);
             return res.status(200).json({
@@ -46,6 +47,7 @@ const signInUser = (req,res) => {
                 body: [
                     {
                         email,
+                        id,
                         token
                     }
                 ]
@@ -99,7 +101,7 @@ const registerUser = (req, res) => {
                     })
                 }
                 // token creation
-                let token = generateAccessToken({username,email});
+                let token = generateAccessToken({username,id:uid,email});
                 token = "Bearer "+token;
                 res.setHeader('Authorization',token);
                 res.status(201).json({
@@ -107,6 +109,7 @@ const registerUser = (req, res) => {
                     message:"successfully registered",
                     body: [{
                         email,
+                        id:uid,
                         token
                     }]
                 })
@@ -124,7 +127,8 @@ const registerUser = (req, res) => {
 const verifyUser = (req, res) => {
     const userToken = req.headers.authorization.split('Bearer')[1].trim();
     const decoded = jwt.decode(userToken);
-    const fields = {email:decoded.email};
+    console.log(decoded);
+    const fields = {id:decoded.id};
     userModel.select('users',fields, (err, result) => {
         if(err) {
             return res.status(401).json({
@@ -145,6 +149,7 @@ const verifyUser = (req, res) => {
             message: 'verified',
             body: {
                 email: decoded.email,
+                id: decoded.id,
                 token: req.headers.authorization
             }
         })

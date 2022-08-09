@@ -8,6 +8,7 @@ type Props = {
 
 type UserObj = {
     email: string;
+    id: string;
     token: string;
 }
 
@@ -38,6 +39,7 @@ const AuthProvider = ({ children }:Props) => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [user, setUser] = useState<UserObj>({
         email: '',
+        id: '',
         token: ''
     });
     const [loginError, setLoginError] = useState<string>('');
@@ -57,9 +59,9 @@ const AuthProvider = ({ children }:Props) => {
                 setUser({
                     ...user,
                     email: result.body[0].email,
+                    id: result.body[0].id,
                     token: result.body[0].token
                 })
-                localStorage.setItem(LskConst.AuthLSK,JSON.stringify(user));
         } catch (error:any) {
             handleError(error.message,'login');
         }
@@ -75,6 +77,7 @@ const AuthProvider = ({ children }:Props) => {
                 setUser({
                     ...user,
                     email: result.data.body[0].email,
+                    id: result.data.body[0].id,
                     token: result.data.body[0].token
                 })
             } catch (error:any) {
@@ -94,13 +97,15 @@ const AuthProvider = ({ children }:Props) => {
             setIsLoggedIn(true);
             setUser({
                 ...user,
-                email: result.email,
-                token: result.token
+                email: result.body.email,
+                id: result.body.id,
+                token: result.body.token
             })
         } catch (error) {
             setIsLoggedIn(false);
             setUser({
                 email: '',
+                id: '',
                 token: ''
             })
         }
