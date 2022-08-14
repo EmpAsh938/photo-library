@@ -31,8 +31,9 @@ const Upload = () => {
         if(userUploadPhotos.length === 0) {
             handleActiveUploadModal(false);
             handleResultFile(null);
-    } else {
-        saveUpload();
+        } else {
+            saveUpload();
+        }
     }
     
     
@@ -40,8 +41,9 @@ const Upload = () => {
         if(userUploadPhotos.length === 0) {
             handleActiveUploadModal(false);
             handleResultFile(null);
-    } else {
-        removeUpload();
+        } else {
+            removeUpload();
+        }
     }
 
     
