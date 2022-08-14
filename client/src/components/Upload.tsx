@@ -26,6 +26,23 @@ const Upload = () => {
             handleResultFile(null);
         }
     }
+    
+    const handleSaveUpload = () => {
+        if(userUploadPhotos.length === 0) {
+            handleActiveUploadModal(false);
+            handleResultFile(null);
+    } else {
+        saveUpload();
+    }
+    
+    
+    const handleRemoveUpload = () => {
+        if(userUploadPhotos.length === 0) {
+            handleActiveUploadModal(false);
+            handleResultFile(null);
+    } else {
+        removeUpload();
+    }
 
     
     useEffect(() => {
@@ -57,8 +74,8 @@ const Upload = () => {
                     )}  
                 </div>
                 <div className="my-5 flex justify-center gap-2">
-                    <button className="inline-block border-none bg-red-700 text-white px-4 py-1 rounded-sm hover:bg-red-600" onClick={() => removeUpload()}>Cancel</button>
-                    <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600" onClick={saveUpload}>Publish</button>
+                    <button className="inline-block border-none bg-red-700 text-white px-4 py-1 rounded-sm hover:bg-red-600" onClick={handleRemoveUpload}>Cancel</button>
+                    <button className="inline-block border-none bg-green-700 text-white px-4 py-1 rounded-sm hover:bg-green-600" onClick={handleSaveUpload}>Publish</button>
                 </div>
             </div>
         </section>
